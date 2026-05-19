@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin • Coffee Shop</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/css/admin.css" />
+  </head>
+
+  <body>
+    <div class="admin-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-mark">☕</div>
+          <div class="brand-text">
+            <div class="brand-title">KOREA • CAFE</div>
+            <div class="brand-sub">Admin Dashboard</div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a class="sidebar-link active" href="/admin">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a class="sidebar-link" href="/admin/products/new">
+            <i class="bi bi-cup-hot"></i>
+            <span>Quản lý sản phẩm</span>
+          </a>
+
+          <a class="sidebar-link" href="#" onclick="return false;">
+            <i class="bi bi-tag"></i>
+            <span>Danh mục</span>
+          </a>
+
+          <a class="sidebar-link logout" href="#" onclick="return false;">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <section class="admin-main">
+        <header class="admin-topbar">
+          <div class="admin-topbar-left">
+            <div class="page-title">Quản lý sản phẩm</div>
+            <div class="page-sub">CRUD • Validate • Upload • Pagination</div>
+          </div>
+
+          <div class="admin-topbar-right">
+            <div class="filter-inline">
+              <form class="d-flex gap-2 align-items-center" action="/admin" method="get">
+                <input type="text" class="form-control" name="keyword" placeholder="Tìm kiếm..." value="<%= query.keyword %>" />
+                <select class="form-select" name="status" style="width: 170px;">
+                  <option value="">Trạng thái</option>
+                  <option value="active" <%= query.status === 'active' ? 'selected' : '' %>>Còn hàng</option>
+                  <option value="out_of_stock" <%= query.status === 'out_of_stock' ? 'selected' : '' %>>Hết hàng</option>
+                </select>
+                <select class="form-select" name="categoryId" style="width: 190px;">
+                  <option value="">Danh mục</option>
+                  <% categories.forEach(c => { %>
+                    <option value="<%= c.id %>" <%= String(query.categoryId) === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+                  <% }) %>
+                </select>
+                <button class="btn btn-caramel" type="submit">
+                  <i class="bi bi-search"></i> Lọc
+                </button>
+              </form>
+            </div>
+          </div>
+        </header>
+
+        <div class="admin-card">
+          <div class="admin-card-head">
+            <div>
+              <div class="admin-card-title">Danh sách sản phẩm</div>
+              <div class="admin-card-sub"><%= total %> sản phẩm</div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <a class="btn btn-soft" href="/admin/products/new">
+                <i class="bi bi-plus-circle"></i> Thêm mới
+              </a>
+            </div>
+          </div>
+
+          <div class="table-responsive admin-table-wrap">
+            <table class="table admin-table align-middle">
+              <thead>
+                <tr>
+                  <th style="width: 80px;">Ảnh</th>
+                  <th>Tên</th>
+                  <th style="width: 160px;">Danh mục</th>
+                  <th style="width: 130px;">Giá</th>
+                  <th style="width: 150px;">Trạng thái</th>
+                  <th style="width: 220px;">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (items.length) { %>
+                  <% items.forEach(p => { %>
+                    <tr>
+                      <td>
+                        <img
+                          class="thumb"
+                          src="<%= p.image_url || 'https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=200&q=80' %>"
+                          alt="<%= p.name %>"
+                        />
+                      </td>
+                      <td>
+                        <div class="cell-title"><%= p.name %></div>
+                      </td>
+                      <td>
+                        <span class="badge badge-muted"><%= p.category_name || '' %></span>
+                      </td>
+                      <td>
+                        <div class="price-cell"><%= Number(p.price).toLocaleString('vi-VN') %> ₫</div>
+                      </td>
+                      <td>
+                        <span class="badge <%= p.status === 'active' ? 'badge-in' : 'badge-out' %>">
+                          <%= p.status === 'active' ? 'Còn hàng' : 'Hết hàng' %>
+                        </span>
+                      </td>
+                      <td>
+                        <div class="d-flex gap-2">
+                          <a class="btn btn-sm btn-primary" href="/admin/products/<%= p.id %>/edit">
+                            <i class="bi bi-pencil"></i> Sửa
+                          </a>
+
+                          <button class="btn btn-sm btn-danger btn-delete" data-id="<%= p.id %>">
+                            <i class="bi bi-trash"></i> Xóa
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="6">
+                      <div class="empty-admin">Không có dữ liệu.</div>
+                    </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <nav class="admin-pagination">
+            <% if (pages > 1) { %>
+              <ul class="pagination justify-content-center">
+                <% for(let i=1;i<=pages;i++){ %>
+                  <li class="page-item <%= i===page ? 'active' : '' %>">
+                    <a class="page-link" href="/admin?page=<%= i %>&keyword=<%= encodeURIComponent(query.keyword||'') %>&status=<%= query.status||'' %>&categoryId=<%= query.categoryId||'' %>">
+                      <%= i %>
+                    </a>
+                  </li>
+                <% } %>
+              </ul>
+            <% } %>
+          </nav>
+        </div>
+
+        <div class="admin-footer">
+          <span>© <%= new Date().getFullYear() %> KOREA • CAFE</span>
+          <span class="sep">•</span>
+          <span>Asian Modern UI</span>
+        </div>
+      </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="/js/admin.js"></script>
+  </body>
+</html>

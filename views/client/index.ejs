@@ -1,0 +1,229 @@
+<%-
+  // client index
+%>
+<%- include('../partials/header', { title: 'Sản phẩm cà phê' }) %>
+
+    <!-- HERO -->
+    <section class="hero" data-aos="fade-up" data-aos-delay="50">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="container">
+        <div class="hero-inner">
+          <div class="hero-left">
+            <div class="hero-badge">
+              <span class="dot"></span>
+              Korean Cafe • Japanese Minimal • Cozy Coffee Shop
+            </div>
+
+            <h1 class="hero-title">
+              Thưởng thức hương vị<br />
+              cà phê chuẩn Châu Á
+            </h1>
+
+            <p class="hero-sub">
+              Premium, tối giản và ấm cúng — nơi bạn tìm thấy sự cân bằng giữa vị đậm và trải nghiệm tinh tế.
+            </p>
+
+            <div class="hero-actions">
+              <a href="#products" class="btn btn-primary btn-anim">Khám phá ngay</a>
+              <a href="#products" class="btn btn-caramel btn-anim">Đặt ngay</a>
+            </div>
+
+            <div class="hero-stats">
+              <div class="stat">
+                <div class="stat-num">12+</div>
+                <div class="stat-label">Danh mục hương vị</div>
+              </div>
+              <div class="stat">
+                <div class="stat-num">4.9★</div>
+                <div class="stat-label">Đánh giá khách hàng</div>
+              </div>
+              <div class="stat">
+                <div class="stat-num">24/7</div>
+                <div class="stat-label">Giao nhanh (demo)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-right" data-aos="zoom-in" data-aos-delay="150">
+            <div class="hero-card">
+              <div class="hero-card-top">
+                <div class="kpi">
+                  <span class="kpi-label">Hôm nay</span>
+                  <span class="kpi-value">Caramel Latte</span>
+                </div>
+                <span class="pill">Best Seller</span>
+              </div>
+
+              <div class="hero-image-wrap">
+                <div class="hero-image-frame">
+                  <img
+                    class="hero-image"
+                    src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1400&q=80"
+                    alt="Cà phê nghệ thuật"
+                    loading="lazy"
+                  />
+                  <div class="hero-image-overlay"></div>
+                </div>
+              </div>
+
+              <div class="hero-card-bottom">
+                <div class="tiny-row">
+                  <i class="bi bi-clock"></i>
+                  <span>Phục vụ 08:00 - 22:00</span>
+                </div>
+                <div class="tiny-row">
+                  <i class="bi bi-geo-alt"></i>
+                  <span>Quận trung tâm (demo)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scroll-hint" aria-hidden="true">
+          <span class="scroll-dot"></span>
+          <span class="scroll-text">Cuộn để khám phá</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCTS + FILTER -->
+    <section class="section" id="products">
+      <div class="container">
+        <div class="section-head" data-aos="fade-up">
+          <h2 class="section-title">Sản phẩm</h2>
+          <p class="section-desc">Tìm kiếm realtime • Lọc danh mục • Card mềm mại • Hover animation</p>
+        </div>
+
+        <div class="filter-bar" data-aos="fade-up" data-aos-delay="70">
+          <div class="filter-left">
+            <div class="searchbox">
+              <i class="bi bi-search search-icon"></i>
+              <input
+                type="text"
+                id="searchInput"
+                class="form-control"
+                placeholder="Tìm kiếm món bạn yêu thích..."
+                value="<%= keyword %>"
+              />
+              <button id="clearSearchBtn" class="btn btn-link clear-btn" type="button" aria-label="Xóa tìm kiếm">
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-right">
+            <div class="category-select">
+              <label class="select-label" for="categorySelect">Danh mục</label>
+              <select id="categorySelect" class="form-select">
+                <option value="">Tất cả</option>
+                <% categories.forEach(c => { %>
+                  <option value="<%= c.id %>" <%= selectedCategoryId == c.id ? 'selected' : '' %>><%= c.name %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <div class="filter-status">
+              <label class="select-label" for="statusSelect">Trạng thái</label>
+              <select id="statusSelect" class="form-select">
+                <option value="active" <%= 'active' === 'active' ? 'selected' : '' %>>Còn hàng</option>
+                <option value="out_of_stock">Hết hàng (demo)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading skeleton -->
+        <div id="skeleton" class="grid-skeleton d-none" aria-hidden="true">
+          <% for(let i=0;i<8;i++){ %>
+            <div class="product-card skeleton-card">
+              <div class="sk-img"></div>
+              <div class="sk-line w-80"></div>
+              <div class="sk-line w-60"></div>
+              <div class="sk-line w-90"></div>
+              <div class="sk-footer">
+                <div class="sk-badge"></div>
+                <div class="sk-price"></div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+          <% products.forEach(p => { %>
+            <% const statusLabel = p.status === 'active' ? 'Còn hàng' : 'Hết hàng'; %>
+            <article class="product-card" data-aos="fade-up" data-aos-delay="30">
+              <a href="#" class="product-media">
+                <div class="media-frame">
+                  <img
+                    src="<%= p.image_url ? p.image_url : 'https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=80' %>"
+                    alt="<%= p.name %>"
+                    loading="lazy"
+                  />
+                  <div class="media-glass"></div>
+                </div>
+              </a>
+
+              <div class="product-body">
+                <div class="product-top">
+                  <h3 class="product-title"><%= p.name %></h3>
+                  <span class="badge <%= p.status === 'active' ? 'badge-in' : 'badge-out' %>">
+                    <%= statusLabel %>
+                  </span>
+                </div>
+
+                <div class="product-price">
+                  <span class="price-label">Giá</span>
+                  <span class="price-value"><%= Number(p.price).toLocaleString('vi-VN') %> ₫</span>
+                </div>
+
+                <p class="product-desc"><%= p.description %></p>
+
+                <div class="product-meta">
+                  <span class="meta-pill"><i class="bi bi-tags"></i> <%= p.category_name || '' %></span>
+                </div>
+
+                <div class="product-actions">
+                  <button class="btn btn-soft btn-full btn-order" data-name="<%= p.name %>">
+                    Đặt ngay
+                  </button>
+                </div>
+              </div>
+            </article>
+          <% }) %>
+
+          <% if (!products.length) { %>
+            <div class="empty-state">
+              <div class="empty-emoji">☕</div>
+              <h3>Không có sản phẩm phù hợp</h3>
+              <p>Thử đổi từ khóa hoặc chọn danh mục khác nhé.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATEGORIES (simple) -->
+    <section class="section section-alt" id="categories">
+      <div class="container">
+        <div class="section-head" data-aos="fade-up">
+          <h2 class="section-title">Danh mục</h2>
+          <p class="section-desc">Hương vị được chọn lọc — tối giản, tinh tế</p>
+        </div>
+
+        <div class="category-grid" data-aos="fade-up" data-aos-delay="70">
+          <% categories.forEach((c, idx) => { %>
+            <div class="cat-card" style="--i:<%= idx %>">
+              <div class="cat-icon">
+                <i class="bi bi-cup-hot"></i>
+              </div>
+              <div class="cat-name"><%= c.name %></div>
+              <div class="cat-sub">Taste • Aroma • Balance</div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <%- include('../partials/footer') %>
